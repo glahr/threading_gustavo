@@ -7,7 +7,7 @@ add_compile_options(-std=c++11)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED roscpp rospy actionlib actionlib_msgs geometry_msgs yumi_experiments)
+find_package(catkin REQUIRED roscpp rospy actionlib actionlib_msgs geometry_msgs yumi_experiments moveit_core moveit_ros_planning_interface)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -71,7 +71,7 @@ catkin_python_setup()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES threading
-  CATKIN_DEPENDS roscpp rospy actionlib actionlib_msgs geometry_msgs yumi_experiments
+  CATKIN_DEPENDS roscpp rospy actionlib actionlib_msgs geometry_msgs yumi_experiments moveit_core moveit_ros_planning_interface
 #  DEPENDS system_lib
 )
 
@@ -90,9 +90,9 @@ add_executable(gustavo_teste src/gustavo_teste.cpp)
 target_link_libraries(   gustavo_teste   ${catkin_LIBRARIES} )
 add_dependencies(gustavo_teste ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
-add_executable(joints_subscriber src/joints_subscriber.cpp)
-target_link_libraries(joints_subscriber   ${catkin_LIBRARIES})
-add_dependencies(joints_subscriber ${${PROJECT_NAME}_EXPORTED_TARGETS})
+#add_executable(jnt_crt_action_node src/jnt_crt_action_node.cpp)
+#target_link_libraries(jnt_crt_action_node   ${catkin_LIBRARIES})
+#add_dependencies(jnt_crt_action_node ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 catkin_install_python(PROGRAMS scripts/gustavo_controller.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
