@@ -2,6 +2,7 @@ bool use_right
 geometry_msgs/PoseStamped desired_right_pose
 bool use_left
 geometry_msgs/PoseStamped desired_left_pose
+bool pure_ft_control
 ---
 
 ---

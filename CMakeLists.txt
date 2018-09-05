@@ -28,7 +28,7 @@ find_package(catkin REQUIRED roscpp rospy actionlib actionlib_msgs geometry_msgs
 
 ## Generate actions in the 'action' folder
  add_action_files(
-   FILES RunFolding.action ApproachController.action AdmittanceController.action SensorCalibration.action
+   FILES AdmittanceController.action ApproachController.action # SensorCalibration.action RunFolding.action
  )
 
 catkin_python_setup()
@@ -89,6 +89,10 @@ include_directories(
 add_executable(gustavo_teste src/gustavo_teste.cpp)
 target_link_libraries(   gustavo_teste   ${catkin_LIBRARIES} )
 add_dependencies(gustavo_teste ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+#add_executable(admittance_controller src/admittance_action_node.cpp src/admittance_controller.cpp)
+#target_link_libraries(   admittance_controller   ${catkin_LIBRARIES} )
+#add_dependencies(admittance_controller ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 #add_executable(jnt_crt_action_node src/jnt_crt_action_node.cpp)
 #target_link_libraries(jnt_crt_action_node   ${catkin_LIBRARIES})
