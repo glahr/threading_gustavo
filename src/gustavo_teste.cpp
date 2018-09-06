@@ -16,7 +16,7 @@ sensor_msgs::JointState states;
 void done_cb(const actionlib::SimpleClientGoalState& state,
             const threading_gustavo::AdmittanceControllerResultConstPtr& result)
 {
-    ROS_INFO("soh pra nao passar em branco");
+//     ROS_INFO("soh pra nao passar em branco");
 }
 
 void active_cb()
@@ -71,12 +71,12 @@ int main (int argc, char **argv)
 
   initial_pose.desired_left_pose.pose.position.x = 0.4;
   initial_pose.desired_left_pose.pose.position.y = 0.08;
-  initial_pose.desired_left_pose.pose.position.z = 0.25;
+  initial_pose.desired_left_pose.pose.position.z = 0.3;
   initial_pose.desired_left_pose.pose.orientation.x = 1;
   
   std::cout << "APPROACH \n" << std::endl;
   ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);
-  ac.waitForResult(ros::Duration(20.0));  
+  ac.waitForResult(ros::Duration(30.0));  
   ac.cancelGoal();
   ac.stopTrackingGoal();
   
@@ -93,20 +93,31 @@ int main (int argc, char **argv)
 //   ac.cancelGoal();
 //   ac.stopTrackingGoal();
   
-//   aux_pose.desired_left_pose.pose.position.x = 0.4;
-//   aux_pose.desired_left_pose.pose.position.y = 0.08;
-//   aux_pose.desired_left_pose.pose.position.z = 0.25;
-//   aux_pose.pure_ft_control = true;
+// // // // // // /*  
+// // // // // //   aux_pose.use_left = true;
+// // // // // //   aux_pose.desired_left_pose.pose.position.x = 0.4;
+// // // // // //   aux_pose.desired_left_pose.pose.position.y = 0.08;
+// // // // // //   aux_pose.desired_left_pose.pose.position.z = 0.3;
+// // // // // //   aux_pose.pure_ft_control = false;
+// // // // // //   
+// // // // // //   aux_pose.desired_left_pose.pose.orientation.x = -0.146;
+// // // // // //   aux_pose.desired_left_pose.pose.orientation.y = 0.354;
+// // // // // //   aux_pose.desired_left_pose.pose.orientation.z = 0.354;
+// // // // // //   aux_pose.desired_left_pose.pose.orientation.w = 0.854;
+// // // // // //   
+// // // // // //   ac.sendGoal(aux_pose, &done_cb, &active_cb, &feedback_cb);  
+// // // // // //   std::cout << "PONTO 2 \n" << std::endl;
+// // // // // //   ac.waitForResult(ros::Duration(0.0));
+// // // // // //   */
   
-//   aux_pose.desired_left_pose.pose.orientation.x = -0.146;
-//   aux_pose.desired_left_pose.pose.orientation.y = 0.354;
-//   aux_pose.desired_left_pose.pose.orientation.z = 0.354;
-//   aux_pose.desired_left_pose.pose.orientation.w = 0.854;
-//   aux_pose.desired_left_pose.pose.orientation.x = 1;
   
-//   ac.sendGoal(aux_pose, &done_cb, &active_cb, &feedback_cb);  
-//   std::cout << "PONTO 2 \n" << std::endl;
-//   ac.waitForResult(ros::Duration(0.0));
+  
+  
+//   std::cout << "Waiting..." << std::endl;
+//   getchar();
+  
+    std::cout << "Waiting..." << std::endl;
+  getchar();
   
   initial_pose.pure_ft_control = true;
   ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);  
@@ -114,7 +125,6 @@ int main (int argc, char **argv)
   ac.waitForResult(ros::Duration(0.0));
   ac.cancelGoal();
   ac.stopTrackingGoal();
-  
   
   std::cout << "THREADING \n" << std::endl;
   initial_pose.pure_ft_control = false;
@@ -150,32 +160,32 @@ int main (int argc, char **argv)
   
   
 // // // // // // // // // // // // // // // // // // // // // // // //   //APPROACH
-  actionlib::SimpleActionClient<threading_gustavo::ApproachControllerAction> ac_approach("/approach_controller/approach", true);
-  
-//   ROS_INFO("Waiting for action server to start.");
-  // wait for the action server to start
-  ac_approach.waitForServer(); //will wait for infinite time
-//   ROS_INFO("Action server started, sending goal.");
-  // send a goal to the action
-  threading_gustavo::ApproachControllerGoal insertion;
-  
-  insertion.desired_twist.twist.linear.z = 0.01;
-  insertion.desired_twist.twist.angular.z = 0.1;
-  insertion.desired_twist.header.frame_id = "yumi_link_7_l";
-  insertion.max_contact_force = 1.0;
-  
-  
-  ac_approach.sendGoal(insertion);	
-
-
-  std::cout << "[ INFO] [" << ros::Time::now() << "]: Antes" << std::endl;
-  //ROS_INFO("Antes");
-  //ROS_INFO(begin);
-  //wait for the action to return
-  ac_approach.waitForResult(ros::Duration(0.0));
-  //ROS_INFO("Depois");
-  std::cout << "[ INFO] [" << ros::Time::now() << "]: Depois" << std::endl;
-  //ROS_INFO();
+// // // // //   actionlib::SimpleActionClient<threading_gustavo::ApproachControllerAction> ac_approach("/approach_controller/approach", true);
+// // // // //   
+// // // // // //   ROS_INFO("Waiting for action server to start.");
+// // // // //   // wait for the action server to start
+// // // // //   ac_approach.waitForServer(); //will wait for infinite time
+// // // // // //   ROS_INFO("Action server started, sending goal.");
+// // // // //   // send a goal to the action
+// // // // //   threading_gustavo::ApproachControllerGoal insertion;
+// // // // //   
+// // // // //   insertion.desired_twist.twist.linear.z = 0.01;
+// // // // //   insertion.desired_twist.twist.angular.z = 0.1;
+// // // // //   insertion.desired_twist.header.frame_id = "yumi_link_7_l";
+// // // // //   insertion.max_contact_force = 1.0;
+// // // // //   
+// // // // //   
+// // // // //   ac_approach.sendGoal(insertion);	
+// // // // // 
+// // // // // 
+// // // // //   std::cout << "[ INFO] [" << ros::Time::now() << "]: Antes" << std::endl;
+// // // // //   //ROS_INFO("Antes");
+// // // // //   //ROS_INFO(begin);
+// // // // //   //wait for the action to return
+// // // // //   ac_approach.waitForResult(ros::Duration(0.0));
+// // // // //   //ROS_INFO("Depois");
+// // // // //   std::cout << "[ INFO] [" << ros::Time::now() << "]: Depois" << std::endl;
+// // // // //   //ROS_INFO();
   
 //  while(ros::ok())
 	//{
