@@ -21,11 +21,9 @@ void done_cb(const actionlib::SimpleClientGoalState& state,
 
 void active_cb()
 {
-  ROS_INFO("Goal just went active");
+//   ROS_INFO("Goal just went active");
 }
 
-
-// void feedback_cb(const threading_gustavo::AdmittanceControllerFeedbackConstPtr& feedback, int a)
 void feedback_cb(const threading_gustavo::AdmittanceControllerFeedbackConstPtr& feedback)
 {
     
@@ -35,7 +33,10 @@ void feedback_cb(const threading_gustavo::AdmittanceControllerFeedbackConstPtr& 
         {
 //             *meuValor = feedback->actual_pose;
 //             std::cout << *meuValor << std::endl;
-//             std::cout << feedback->linear_error_norm[0] << std::endl;            
+//             std::cout << "linear_error_norm: " << feedback->linear_error_norm[0] << std::endl;
+//             std::cout << "roll_error: " << feedback->roll_error[0] << std::endl;
+//             std::cout << "pitch_error: " << feedback->pitch_error[0] << std::endl;
+//             std::cout << "yaw_error: " << feedback->yaw_error[0] << "\n" << std::endl;
         }
             
 }
@@ -56,150 +57,72 @@ int main (int argc, char **argv)
   
   //MOVING TO STARTING POSITION
   
-  actionlib::SimpleActionClient<threading_gustavo::AdmittanceControllerAction> ac("/admittance_controller/admittance", true);
-  ac.waitForServer(); //will wait for infinite time
+  actionlib::SimpleActionClient<threading_gustavo::AdmittanceControllerAction> ac_admitance("/admittance_controller/admittance",
+ true);
+  actionlib::SimpleActionClient<threading_gustavo::ApproachControllerAction> ac_approach("/approach_controller/approach", true);
   
-  threading_gustavo::AdmittanceControllerGoal initial_pose;
-  threading_gustavo::AdmittanceControllerGoal aux_pose;
-  //threading_gustavo::AdmittanceControllerActionFeedback feedback;
-  
-  //feedback.header.frame_id = "yumi_link_7_l";
-  
-  initial_pose.use_left = true;
-  initial_pose.desired_left_pose.header.frame_id = "yumi_link_7_l";
-  initial_pose.pure_ft_control = false;
 
-  initial_pose.desired_left_pose.pose.position.x = 0.4;
-  initial_pose.desired_left_pose.pose.position.y = 0.08;
-  initial_pose.desired_left_pose.pose.position.z = 0.3;
-  initial_pose.desired_left_pose.pose.orientation.x = 1;
+// // // // // // // // // // // // // // // // // // INITIAL POSITION
+  std::cout << "\nINITIAL POSITION \n" << std::endl;
   
-  std::cout << "APPROACH \n" << std::endl;
-  ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);
-  ac.waitForResult(ros::Duration(30.0));  
-  ac.cancelGoal();
-  ac.stopTrackingGoal();
+  ac_admitance.waitForServer(); //will wait for infinite time  
+  threading_gustavo::AdmittanceControllerGoal alignment_pose_goal;
   
-// //   std::cout << "sending new goal" << std::endl;
-// 
-//   initial_pose.desired_left_pose.pose.position.x = 0.3;
-//   initial_pose.desired_left_pose.pose.position.y = 0.1;
-//   initial_pose.desired_left_pose.pose.position.z = 0.3;
-//   initial_pose.desired_left_pose.pose.orientation.x = 0;
-//   
-//   ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);  
-//   std::cout << "TROQUEI 2 \n" << std::endl;
-//   ac.waitForResult(ros::Duration(10.0));
-//   ac.cancelGoal();
-//   ac.stopTrackingGoal();
+  alignment_pose_goal.use_left = true;
+  alignment_pose_goal.desired_left_pose.header.frame_id = "yumi_link_7_l";
+  alignment_pose_goal.pure_ft_control = false;
+
+  alignment_pose_goal.desired_left_pose.pose.position.x = 0.3;
+  alignment_pose_goal.desired_left_pose.pose.position.y = 0.15;
+  alignment_pose_goal.desired_left_pose.pose.position.z = 0.3;
+  alignment_pose_goal.desired_left_pose.pose.orientation.x = 1;
+//   alignment_pose_goal.desired_left_pose.pose.orientation.y = 0;
   
-// // // // // // /*  
-// // // // // //   aux_pose.use_left = true;
-// // // // // //   aux_pose.desired_left_pose.pose.position.x = 0.4;
-// // // // // //   aux_pose.desired_left_pose.pose.position.y = 0.08;
-// // // // // //   aux_pose.desired_left_pose.pose.position.z = 0.3;
-// // // // // //   aux_pose.pure_ft_control = false;
-// // // // // //   
-// // // // // //   aux_pose.desired_left_pose.pose.orientation.x = -0.146;
-// // // // // //   aux_pose.desired_left_pose.pose.orientation.y = 0.354;
-// // // // // //   aux_pose.desired_left_pose.pose.orientation.z = 0.354;
-// // // // // //   aux_pose.desired_left_pose.pose.orientation.w = 0.854;
-// // // // // //   
-// // // // // //   ac.sendGoal(aux_pose, &done_cb, &active_cb, &feedback_cb);  
-// // // // // //   std::cout << "PONTO 2 \n" << std::endl;
-// // // // // //   ac.waitForResult(ros::Duration(0.0));
-// // // // // //   */
+  ac_admitance.sendGoal(alignment_pose_goal, &done_cb, &active_cb, &feedback_cb);
+  ac_admitance.waitForResult(ros::Duration(0.0));  
+  ac_admitance.cancelGoal();
+  ac_admitance.stopTrackingGoal();
   
-  
-  
-  
-//   std::cout << "Waiting..." << std::endl;
-//   getchar();
-  
-    std::cout << "Waiting..." << std::endl;
-  getchar();
-  
-  initial_pose.pure_ft_control = true;
-  ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);  
+// // // // // // // // // // // // // // // // // // // ALIGNMENT
   std::cout << "ALIGNMENT \n" << std::endl;
-  ac.waitForResult(ros::Duration(0.0));
-  ac.cancelGoal();
-  ac.stopTrackingGoal();
   
+  alignment_pose_goal.pure_ft_control = true;
+  ac_admitance.sendGoal(alignment_pose_goal, &done_cb, &active_cb, &feedback_cb);  
+  ac_admitance.waitForResult(ros::Duration(0.0));
+  ac_admitance.cancelGoal();
+  ac_admitance.stopTrackingGoal();
+  
+  
+// // // // // // // // // // // // // // // // // // // THREADING  
   std::cout << "THREADING \n" << std::endl;
-  initial_pose.pure_ft_control = false;
-  ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);
   
-//   std::cout << "LOOP INFINITO \n" << std::endl;
-//   while(true)
-//   {
-//       ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);
-//       ac.waitForResult(ros::Duration(0.0));
-//       ac.sendGoal(aux_pose, &done_cb, &active_cb, &feedback_cb);  
-//       ac.waitForResult(ros::Duration(0.0));
-//   }
+  ac_approach.waitForServer(); //will wait for infinite time
+  threading_gustavo::ApproachControllerGoal threading;
+  
+//   threading.desired_twist.twist.linear.z = 0.01;
+  threading.desired_twist.twist.angular.z = 0.1;
+  threading.desired_twist.header.frame_id = "yumi_link_7_l";
+  threading.max_contact_force = 1.0;
+  threading.threading = true;
   
   
-//   std::cout << "ENTRANDO NO SENO \n" << std::endl;
-//   ros::Duration(1.0).sleep();
-//   
-//   ros::Rate r(100);
-//   double begin = ros::Time::now().toSec();
-//   
-//   while(ros::ok())
-//   { 
-//     double t = ros::Time::now().toSec() - begin;
-//     initial_pose.desired_left_pose.pose.position.x = 0.3 + 0.1*sin(0.2*t);
-//     initial_pose.desired_left_pose.pose.position.y = 0.1;
-//     initial_pose.desired_left_pose.pose.position.z = 0.3;
-//     initial_pose.desired_left_pose.pose.orientation.x = 1;
-//     
-//     ac.sendGoal(initial_pose, &done_cb, &active_cb, &feedback_cb);
-//     r.sleep();
-//   }
+  ac_approach.sendGoal(threading);
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
   
   
-// // // // // // // // // // // // // // // // // // // // // // // //   //APPROACH
-// // // // //   actionlib::SimpleActionClient<threading_gustavo::ApproachControllerAction> ac_approach("/approach_controller/approach", true);
-// // // // //   
-// // // // // //   ROS_INFO("Waiting for action server to start.");
-// // // // //   // wait for the action server to start
-// // // // //   ac_approach.waitForServer(); //will wait for infinite time
-// // // // // //   ROS_INFO("Action server started, sending goal.");
-// // // // //   // send a goal to the action
-// // // // //   threading_gustavo::ApproachControllerGoal insertion;
-// // // // //   
-// // // // //   insertion.desired_twist.twist.linear.z = 0.01;
-// // // // //   insertion.desired_twist.twist.angular.z = 0.1;
-// // // // //   insertion.desired_twist.header.frame_id = "yumi_link_7_l";
-// // // // //   insertion.max_contact_force = 1.0;
-// // // // //   
-// // // // //   
-// // // // //   ac_approach.sendGoal(insertion);	
-// // // // // 
-// // // // // 
-// // // // //   std::cout << "[ INFO] [" << ros::Time::now() << "]: Antes" << std::endl;
-// // // // //   //ROS_INFO("Antes");
-// // // // //   //ROS_INFO(begin);
-// // // // //   //wait for the action to return
-// // // // //   ac_approach.waitForResult(ros::Duration(0.0));
-// // // // //   //ROS_INFO("Depois");
-// // // // //   std::cout << "[ INFO] [" << ros::Time::now() << "]: Depois" << std::endl;
-// // // // //   //ROS_INFO();
+// // // // // // // // // // // // // // // // // // RECOVERING
+  std::cout << "RECOVERING \n" << std::endl;
   
-//  while(ros::ok())
-	//{
-	  //ros::spin();
-//	}
+  
+  threading.desired_twist.twist.angular.z = -0.1;
+  threading.threading = false;
+  ac_admitance.sendGoal(alignment_pose_goal, &done_cb, &active_cb, &feedback_cb);  
+  ac_admitance.waitForResult(ros::Duration(0.0));
+  ac_admitance.cancelGoal();
+  ac_admitance.stopTrackingGoal();
 
-//   if (finished_before_timeout)
-//   {
-//     actionlib::SimpleClientGoalState state = ac.getState();
-//     ROS_INFO("Action finished: %s",state.toString().c_str());
-//   }
-//   else
-//     ROS_INFO("Action did not finish before the time out.");
-
-  //exit
+  
   return 0;
 }

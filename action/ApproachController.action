@@ -1,4 +1,5 @@
 geometry_msgs/TwistStamped desired_twist
 float64 max_contact_force
+bool threading
 ---
 ---
