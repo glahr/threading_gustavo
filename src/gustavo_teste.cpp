@@ -11,6 +11,7 @@ using namespace generic_control_toolbox;
 using namespace yumi_experiments;
 
 geometry_msgs::PoseStamped *meuValor = new geometry_msgs::PoseStamped;
+float *posZ = new float;
 sensor_msgs::JointState states;
 
 void done_cb(const actionlib::SimpleClientGoalState& state,
@@ -33,10 +34,13 @@ void feedback_cb(const threading_gustavo::AdmittanceControllerFeedbackConstPtr& 
         {
 //             *meuValor = feedback->actual_pose;
 //             std::cout << *meuValor << std::endl;
-//             std::cout << "linear_error_norm: " << feedback->linear_error_norm[0] << std::endl;
-//             std::cout << "roll_error: " << feedback->roll_error[0] << std::endl;
-//             std::cout << "pitch_error: " << feedback->pitch_error[0] << std::endl;
-//             std::cout << "yaw_error: " << feedback->yaw_error[0] << "\n" << std::endl;
+//             std::cout << "linear_error_norm: \t" << feedback->linear_error_norm[0] << std::endl;
+//             std::cout << "roll_error: \t" << feedback->roll_error[0] << std::endl;
+//             std::cout << "pitch_error: \t" << feedback->pitch_error[0] << std::endl;
+//             std::cout << "yaw_error: \t" << feedback->yaw_error[0] << std::endl;
+//             std::cout << "fz: \t" << feedback->fz[0] << std::endl;
+//             std::cout << "posZ: \t" << feedback->posZ[0] << "\n" << std::endl;
+            *posZ = feedback->posZ[0];
         }
             
 }
@@ -61,52 +65,84 @@ int main (int argc, char **argv)
  true);
   actionlib::SimpleActionClient<threading_gustavo::ApproachControllerAction> ac_approach("/approach_controller/approach", true);
   
-
-// // // // // // // // // // // // // // // // // // INITIAL POSITION
+  
+  threading_gustavo::AdmittanceControllerGoal initial_position;
+  threading_gustavo::AdmittanceControllerGoal going_up;
+  threading_gustavo::ApproachControllerGoal back_spinning;
+  threading_gustavo::ApproachControllerGoal threading_task;
+  threading_gustavo::ApproachControllerGoal recovering;
+  
+  recovering.desired_twist.twist.angular.z = -0.1;
+  recovering.desired_twist.header.frame_id = "yumi_link_7_l";
+  recovering.threading = false;
+  recovering.max_contact_force = 1.0;
+  recovering.reset_controller = true;
+  
+  threading_task.desired_twist.twist.angular.z = 0.1;
+  threading_task.desired_twist.header.frame_id = "yumi_link_7_l";
+  threading_task.max_contact_force = 1.0;
+  threading_task.threading = true;
+  threading_task.reset_controller = false;
+  
+  back_spinning.desired_twist.twist.angular.z = -0.1;
+  back_spinning.desired_twist.header.frame_id = "yumi_link_7_l";
+  back_spinning.reset_controller = false;
+  back_spinning.max_contact_force = 1.0;
+  back_spinning.threading = false;
+  
+  
+  // // // // // // // // // // // // // // // // // // INITIAL POSITION
   std::cout << "\nINITIAL POSITION \n" << std::endl;
   
   ac_admitance.waitForServer(); //will wait for infinite time  
-  threading_gustavo::AdmittanceControllerGoal alignment_pose_goal;
   
-  alignment_pose_goal.use_left = true;
-  alignment_pose_goal.desired_left_pose.header.frame_id = "yumi_link_7_l";
-  alignment_pose_goal.pure_ft_control = false;
+  initial_position.use_left = true;
+  initial_position.desired_left_pose.header.frame_id = "yumi_link_7_l";
+  initial_position.pure_ft_control = false;
 
-  alignment_pose_goal.desired_left_pose.pose.position.x = 0.3;
-  alignment_pose_goal.desired_left_pose.pose.position.y = 0.15;
-  alignment_pose_goal.desired_left_pose.pose.position.z = 0.3;
-  alignment_pose_goal.desired_left_pose.pose.orientation.x = 1;
-//   alignment_pose_goal.desired_left_pose.pose.orientation.y = 0;
+  initial_position.desired_left_pose.pose.position.x = 0.3;
+  initial_position.desired_left_pose.pose.position.y = 0.15;
+  initial_position.desired_left_pose.pose.position.z = 0.3;
+  initial_position.desired_left_pose.pose.orientation.x = 1;
+//   initial_position.desired_left_pose.pose.orientation.y = 0.707;
   
-  ac_admitance.sendGoal(alignment_pose_goal, &done_cb, &active_cb, &feedback_cb);
-  ac_admitance.waitForResult(ros::Duration(0.0));  
+  ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
+  ac_admitance.waitForResult(ros::Duration(40.0));  
   ac_admitance.cancelGoal();
   ac_admitance.stopTrackingGoal();
+  
+  going_up = initial_position;
+
+while(ros::ok())
+{
   
 // // // // // // // // // // // // // // // // // // // ALIGNMENT
   std::cout << "ALIGNMENT \n" << std::endl;
   
-  alignment_pose_goal.pure_ft_control = true;
-  ac_admitance.sendGoal(alignment_pose_goal, &done_cb, &active_cb, &feedback_cb);  
+  initial_position.pure_ft_control = true;
+  ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);  
   ac_admitance.waitForResult(ros::Duration(0.0));
   ac_admitance.cancelGoal();
   ac_admitance.stopTrackingGoal();
   
   
 // // // // // // // // // // // // // // // // // // // THREADING  
-  std::cout << "THREADING \n" << std::endl;
+  std::cout << "BACK-SPINNING \n" << std::endl;
   
   ac_approach.waitForServer(); //will wait for infinite time
-  threading_gustavo::ApproachControllerGoal threading;
   
-//   threading.desired_twist.twist.linear.z = 0.01;
-  threading.desired_twist.twist.angular.z = 0.1;
-  threading.desired_twist.header.frame_id = "yumi_link_7_l";
-  threading.max_contact_force = 1.0;
-  threading.threading = true;
+  ac_approach.sendGoal(back_spinning);
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
   
   
-  ac_approach.sendGoal(threading);
+// // // // // // // // // // // // // // // // // // // THREADING  
+  std::cout << "THREADING \n" << std::endl;
+  
+  ac_approach.waitForServer();
+  
+  ac_approach.sendGoal(threading_task);
   ac_approach.waitForResult(ros::Duration(0.0));
   ac_approach.cancelGoal();
   ac_approach.stopTrackingGoal();
@@ -115,14 +151,48 @@ int main (int argc, char **argv)
 // // // // // // // // // // // // // // // // // // RECOVERING
   std::cout << "RECOVERING \n" << std::endl;
   
+  ac_approach.waitForServer();
   
-  threading.desired_twist.twist.angular.z = -0.1;
-  threading.threading = false;
-  ac_admitance.sendGoal(alignment_pose_goal, &done_cb, &active_cb, &feedback_cb);  
-  ac_admitance.waitForResult(ros::Duration(0.0));
+  ac_approach.sendGoal(recovering);  
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
+  
+  
+// // // // // // // // // // // // // // // // // // RECOVERING
+  std::cout << "GOING UP \n" << std::endl;
+  
+  ac_admitance.waitForServer();
+  
+  going_up.pure_ft_control = false;
+  int i = 0;
+  while (abs(going_up.desired_left_pose.pose.position.z - *posZ) < 0.2)
+  {
+      std::cout << "incremento " << i+1 << std::endl;
+    going_up.desired_left_pose.pose.position.z = going_up.desired_left_pose.pose.position.z + 0.05;
+    ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
+    ac_admitance.waitForResult(ros::Duration(2.0));  
+    ac_admitance.cancelGoal();
+    ac_admitance.stopTrackingGoal();
+    i++;
+  }
+  
+  
+// // // // // // // // // // // // // // // // // // INITIAL POSITION
+  std::cout << "INITIAL POSITION \n" << std::endl;
+  
+  ac_admitance.waitForServer();
+  
+  initial_position.pure_ft_control = false;
+  ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
+  ac_admitance.waitForResult(ros::Duration(20.0));  
   ac_admitance.cancelGoal();
   ac_admitance.stopTrackingGoal();
-
+  
+  
+  
+}
+  
   
   return 0;
 }
