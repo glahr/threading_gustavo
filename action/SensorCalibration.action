@@ -1,0 +1,9 @@
+float64[] times
+float64[] forces
+bool[] is_linear_motion
+string[] motion_dirs
+---
+
+---
+geometry_msgs/WrenchStamped wrench_case_sensor
+geometry_msgs/PointStamped probe_tip

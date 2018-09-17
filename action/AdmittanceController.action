@@ -1,0 +1,14 @@
+bool use_right
+geometry_msgs/PoseStamped desired_right_pose
+bool use_left
+geometry_msgs/PoseStamped desired_left_pose
+bool pure_ft_control
+---
+
+---
+float64[] linear_error_norm
+float64[] roll_error
+float64[] pitch_error
+float64[] yaw_error
+float64[] fz
+float64[] posZ
