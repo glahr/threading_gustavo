@@ -1,8 +1,0 @@
-geometry_msgs/TwistStamped desired_twist
-float64 max_contact_force
-bool back_spin
-bool threading
-bool recovering
-bool going_up
----
----
