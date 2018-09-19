@@ -65,7 +65,6 @@ int main (int argc, char **argv)
  true);
   actionlib::SimpleActionClient<threading_gustavo::ApproachControllerAction> ac_approach("/approach_controller/approach", true);
   
-  
   threading_gustavo::AdmittanceControllerGoal initial_position;
   threading_gustavo::ApproachControllerGoal going_up;
   threading_gustavo::ApproachControllerGoal back_spinning;
@@ -132,15 +131,17 @@ while(ros::ok())
 {
   
 // // // // // // // // // // // // // // // // // // // ALIGNMENT
-  std::cout << "ALIGNMENT \n" << std::endl;
-  
-  ac_admitance.waitForServer();
-  
-  initial_position.pure_ft_control = true;
-  ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);  
-  ac_admitance.waitForResult(ros::Duration(0.0));
-  ac_admitance.cancelGoal();
-  ac_admitance.stopTrackingGoal();
+    
+    
+    std::cout << "ALIGNMENT \n" << std::endl;
+    
+    ac_admitance.waitForServer();
+//     while (!ros::is_shutdown())        
+    initial_position.pure_ft_control = true;
+    ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);  
+    ac_admitance.waitForResult(ros::Duration(0.0));
+    ac_admitance.cancelGoal();
+    ac_admitance.stopTrackingGoal();
   
   
 // // // // // // // // // // // // // // // // // // // THREADING  
