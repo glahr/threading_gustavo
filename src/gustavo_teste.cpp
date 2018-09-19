@@ -122,9 +122,11 @@ int main (int argc, char **argv)
 //   initial_position.desired_left_pose.pose.orientation.y = 0.707;
 
   ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
-  ac_admitance.waitForResult(ros::Duration(0.0));
+  ac_admitance.waitForResult(ros::Duration(45.0));
   ac_admitance.cancelGoal();
   ac_admitance.stopTrackingGoal();
+
+//   going_up = initial_position;
 
 // while(ros::ok())
 // {
@@ -132,71 +134,73 @@ int main (int argc, char **argv)
 // // // // // // // // // // // // // // // // // // // // ALIGNMENT
   std::cout << "ALIGNMENT \n" << std::endl;
 
+  ac_admitance.waitForServer();
+
   initial_position.pure_ft_control = true;
   ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
   ac_admitance.waitForResult(ros::Duration(0.0));
   ac_admitance.cancelGoal();
   ac_admitance.stopTrackingGoal();
-//
-//
-// // // // // // // // // // // // // // // // // // // // THREADING
-//   std::cout << "BACK-SPINNING \n" << std::endl;
-//
-//   ac_approach.waitForServer(); //will wait for infinite time
-//
-//   ac_approach.sendGoal(back_spinning);
-//   ac_approach.waitForResult(ros::Duration(0.0));
-//   ac_approach.cancelGoal();
-//   ac_approach.stopTrackingGoal();
-//
-//
-// // // // // // // // // // // // // // // // // // // // THREADING
-//   std::cout << "THREADING \n" << std::endl;
-//
-//   ac_approach.waitForServer();
-//
-//   ac_approach.sendGoal(threading_task);
-//   ac_approach.waitForResult(ros::Duration(0.0));
-//   ac_approach.cancelGoal();
-//   ac_approach.stopTrackingGoal();
-//
-//
-// // // // // // // // // // // // // // // // // // // RECOVERING
-//   std::cout << "RECOVERING \n" << std::endl;
-//
-//   ac_approach.waitForServer();
-//
-// //   ac_approach.sendGoal(recovering_task);
-//   ac_approach.sendGoal(back_spinning);
-//   ac_approach.waitForResult(ros::Duration(0.0));
-//   ac_approach.cancelGoal();
-//   ac_approach.stopTrackingGoal();
-//
-//
-// // // // // // // // // // // // // // // // // // // GOING UP
-//   std::cout << "GOING UP \n" << std::endl;
-//
-//   ac_approach.waitForServer();
-//
-//   ac_approach.sendGoal(going_up);
-//   ac_approach.waitForResult(ros::Duration(0.0));
-//   ac_approach.cancelGoal();
-//   ac_approach.stopTrackingGoal();
-//
-//
-// // // // // // // // // // // // // // // // // // // INITIAL POSITION
-//   i++;
-//   std::cout << "INITIAL POSITION - loop #" << i << "\n" << std::endl;
-//
-//   ac_admitance.waitForServer();
-//
-//   initial_position.pure_ft_control = false;
-//   ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
-//   ac_admitance.waitForResult(ros::Duration(20.0));
-//   ac_admitance.cancelGoal();
-//   ac_admitance.stopTrackingGoal();
-//
-// }
+
+
+// // // // // // // // // // // // // // // // // // // THREADING  
+  std::cout << "BACK-SPINNING \n" << std::endl;
+
+  ac_approach.waitForServer(); //will wait for infinite time
+
+  ac_approach.sendGoal(back_spinning);
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
+
+
+// // // // // // // // // // // // // // // // // // // THREADING
+  std::cout << "THREADING \n" << std::endl;
+
+  ac_approach.waitForServer();
+
+  ac_approach.sendGoal(threading_task);
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
+
+
+// // // // // // // // // // // // // // // // // // RECOVERING
+  std::cout << "RECOVERING \n" << std::endl;
+
+  ac_approach.waitForServer();
+
+//   ac_approach.sendGoal(recovering_task);
+  ac_approach.sendGoal(back_spinning);
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
+
+
+// // // // // // // // // // // // // // // // // // GOING UP
+  std::cout << "GOING UP \n" << std::endl;
+
+  ac_approach.waitForServer();
+
+  ac_approach.sendGoal(going_up);
+  ac_approach.waitForResult(ros::Duration(0.0));
+  ac_approach.cancelGoal();
+  ac_approach.stopTrackingGoal();
+
+
+// // // // // // // // // // // // // // // // // // INITIAL POSITION
+  i++;
+  std::cout << "INITIAL POSITION - loop #" << i << "\n" << std::endl;
+
+  ac_admitance.waitForServer();
+
+  initial_position.pure_ft_control = false;
+  ac_admitance.sendGoal(initial_position, &done_cb, &active_cb, &feedback_cb);
+  ac_admitance.waitForResult(ros::Duration(0.0));
+  ac_admitance.cancelGoal();
+  ac_admitance.stopTrackingGoal();
+
+}
 
 
   return 0;
